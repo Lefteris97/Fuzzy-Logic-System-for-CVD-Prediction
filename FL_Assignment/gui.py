@@ -63,8 +63,11 @@ class FuzzyLogicApp:
         button = Button(inputs_frame, text="Diagnose", command=self.diagnose, bg='white', fg='#678C54', padx=10, pady=5, cursor='hand2', font=('Arial', 12, 'bold'))
         button.grid(row=len(labels), column=0, columnspan=2, pady=30)
 
-        self.result_label = Label(inputs_frame, text="CVD Risk: ", fg='green', bg='#2E2D2D', font=('Arial', 14))
-        self.result_label.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+        self.result_label_value = Label(inputs_frame, text="Numerical CVD Risk: ", fg='green', bg='#2E2D2D', font=('Arial', 14))
+        self.result_label_value.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+
+        self.result_label_category = Label(inputs_frame, text="Categorized CVD Risk: ", fg='green', bg='#2E2D2D', font=('Arial', 14))
+        self.result_label_category.grid(row=len(labels) + 2, column=0, columnspan=2, pady=10)
 
     def diagnose(self):
         try:
@@ -79,14 +82,16 @@ class FuzzyLogicApp:
             diabetes = self.inputs["diabetes"].get()
             diffWalk = self.inputs["diffWalk"].get()
 
-            cvd_risk = self.fuzzy_logic.compute_cvd_risk(
+            cvd_risk_value, cvd_risk_category = self.fuzzy_logic.compute_cvd_risk(
                 genHlth, systolicBp, cholesterol, age, stroke, diabetes, physHlth, diffWalk
             )
 
-            self.result_label.config(text=f"CVD Risk: {cvd_risk:.2f}")
+            self.result_label_value.config(text=f"Numerical CVD Risk: {cvd_risk_value:.2f}")
+            self.result_label_category.config(text=f"Categorized CVD Risk: {cvd_risk_category}")
 
         except ValueError:
-            self.result_label.config(text="Please enter valid numeric values.")
+            self.result_label_value.config(text="Please enter valid numeric values.")
+            self.result_label_category.config(text="")
 
 
 if __name__ == '__main__':
