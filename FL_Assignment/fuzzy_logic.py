@@ -3,6 +3,17 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
 
+def classify_cvd_risk(risk_value):
+    if risk_value <= 3:
+        return "Healthy"
+    elif risk_value <= 5:
+        return "Low Risk"
+    elif risk_value <= 7:
+        return "Medium Risk"
+    elif risk_value <= 10:
+        return "High Risk"
+
+
 class FuzzyLogicSystem:
     def __init__(self):
         # Define fuzzy variables
@@ -54,10 +65,15 @@ class FuzzyLogicSystem:
         self.diffWalk['yes'] = fuzz.trimf(self.diffWalk.universe, [1, 1, 1])  # yes
 
         # Define membership functions for output
-        self.cvd_risk['healthy'] = fuzz.trimf(self.cvd_risk.universe, [0, 2, 4])
+        # self.cvd_risk['healthy'] = fuzz.trimf(self.cvd_risk.universe, [0, 2, 4])
+        # self.cvd_risk['low_risk'] = fuzz.trimf(self.cvd_risk.universe, [2, 4, 6])
+        # self.cvd_risk['medium_risk'] = fuzz.trimf(self.cvd_risk.universe, [4, 6, 8])
+        # self.cvd_risk['high_risk'] = fuzz.trimf(self.cvd_risk.universe, [6, 8, 10])
+
+        self.cvd_risk['healthy'] = fuzz.trapmf(self.cvd_risk.universe, [0, 0, 1, 3])
         self.cvd_risk['low_risk'] = fuzz.trimf(self.cvd_risk.universe, [2, 4, 6])
         self.cvd_risk['medium_risk'] = fuzz.trimf(self.cvd_risk.universe, [4, 6, 8])
-        self.cvd_risk['high_risk'] = fuzz.trimf(self.cvd_risk.universe, [6, 8, 10])
+        self.cvd_risk['high_risk'] = fuzz.trapmf(self.cvd_risk.universe, [7, 9, 10, 10])
 
         # Visualization of membership functions
         # self.genHlth.view()
@@ -155,5 +171,11 @@ class FuzzyLogicSystem:
         # Compute the result
         self.simulation.compute()
 
+        # Get the numerical result
+        risk_value = self.simulation.output['cvd_risk']
+
+        # Classify the result
+        risk_category = classify_cvd_risk(risk_value)
+
         # Return the defuzzified result
-        return self.simulation.output['cvd_risk']
+        return risk_value, risk_category
